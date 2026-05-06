@@ -1,0 +1,690 @@
+Practice Question 1: Student Database
+Focus: Basic CRUD Operations
+a) Create Keyspace
+
+
+cqlsh> CREATE KEYSPACE College
+
+... WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
+
+cqlsh> USE College;
+
+cqlsh:college>
+b) Create Table
+
+cqlsh:college> CREATE TABLE Student_Info (
+
+... USN text PRIMARY KEY,
+
+... Name text,
+
+... Branch text,
+
+... Semester int,
+
+... CGPA double
+
+... );
+c) Insert Records
+
+cqlsh:college> INSERT INTO Student_Info (USN, Name, Branch, Semester, CGPA)
+
+... VALUES ('1MS21CS001', 'Rahul', 'CSE', 5, 8.5);
+
+cqlsh:college>
+
+cqlsh:college> INSERT INTO Student_Info (USN, Name, Branch, Semester, CGPA)
+
+... VALUES ('1MS21IS002', 'Anjali', 'ISE', 5, 8.8);
+
+cqlsh:college>
+
+cqlsh:college> INSERT INTO Student_Info (USN, Name, Branch, Semester, CGPA)
+
+... VALUES ('1MS21EC003', 'Vikram', 'ECE', 5, 8.2);
+d) Update CGPA
+
+cqlsh:college> UPDATE Student_Info
+
+... SET CGPA = 9.1
+
+... WHERE USN = '1MS21CS001';
+
+e) Display All Records
+
+
+cqlsh:college> SELECT * FROM Student_Info;
+
+
+usn | branch | cgpa | name | semester
+
+------------+--------+------+--------+----------
+
+1MS21EC003 | ECE | 8.2 | Vikram | 5
+
+1MS21IS002 | ISE | 8.8 | Anjali | 5
+
+1MS21CS001 | CSE | 9.1 | Rahul | 5
+
+
+
+Practice Question 2: Book Management System
+Focus: BATCH, UPDATE, DELETE
+a) Create a Keyspace named LibraryDB
+
+cqlsh> CREATE KEYSPACE LibraryDB
+
+... WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
+
+cqlsh> USE LibraryDB;
+
+cqlsh:librarydb>
+b) Create Table Book_Info
+
+cqlsh:librarydb> CREATE TABLE Book_Info (
+
+... Book_Id int PRIMARY KEY,
+
+... Title text,
+
+... Author text,
+
+... Price double,
+
+... Category text
+
+... );
+c) Insert Multiple Records Using BATCH
+
+cqlsh:librarydb> BEGIN BATCH
+
+... INSERT INTO Book_Info (Book_Id, Title, Author, Price, Category)
+
+... VALUES (201, 'Data Structures', 'Seymour Lipschutz', 500, 'Education');
+
+...
+
+... INSERT INTO Book_Info (Book_Id, Title, Author, Price, Category)
+
+... VALUES (202, 'Computer Networks', 'Andrew S. Tanenbaum', 650, 'Education');
+
+...
+
+... INSERT INTO Book_Info (Book_Id, Title, Author, Price, Category)
+
+... VALUES (203, 'The Alchemist', 'Paulo Coelho', 300, 'Fiction');
+
+... APPLY BATCH;
+d) Display All Records (Before Update)
+
+cqlsh:librarydb> SELECT * FROM Book_Info;
+
+book_id | author | category | price | title
+
+---------+---------------------+-----------+-------+-------------------
+
+201 | Seymour Lipschutz | Education | 500 | Data Structures
+
+203 | Paulo Coelho | Fiction | 300 | The Alchemist
+
+202 | Andrew S. Tanenbaum | Education | 650 | Computer Networks
+
+
+
+(3 rows)
+
+cqlsh:library
+e) Update the Price of a Specific Book
+
+db> UPDATE Book_Info
+
+... SET Price = 550
+
+... WHERE Book_Id = 201;
+f) Display Records After Update
+
+cqlsh:librarydb> SELECT * FROM Book_Info;
+
+
+
+book_id | author | category | price | title
+
+---------+---------------------+-----------+-------+-------------------
+
+201 | Seymour Lipschutz | Education | 550 | Data Structures
+
+203 | Paulo Coelho | Fiction | 300 | The Alchemist
+
+202 | Andrew S. Tanenbaum | Education | 650 | Computer Networks
+
+
+
+(3 rows)
+g) Delete a Book Record Using Book_Id
+
+cqlsh:librarydb> DELETE FROM Book_Info
+
+... WHERE Book_Id = 203;
+
+cqlsh:librarydb> SELECT * FROM Book_Info;
+
+
+
+book_id | author | category | price | title
+
+---------+---------------------+-----------+-------+-------------------
+
+201 | Seymour Lipschutz | Education | 550 | Data Structures
+
+202 | Andrew S. Tanenbaum | Education | 650 | Computer Networks
+
+
+
+
+Practice Question 3: Customer Orders
+Focus: ALTER TABLE + UPDATE
+a) Create Keyspace
+
+
+
+cqlsh> CREATE KEYSPACE Ecommerce
+
+... WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
+
+cqlsh> USE Ecommerce;
+
+
+b) Create Table
+
+cqlsh:ecommerce> CREATE TABLE Customer_Orders (
+
+... Order_Id int PRIMARY KEY,
+
+... Customer_Name text,
+
+... Product_Name text,
+
+... Quantity int,
+
+... Order_Date date
+
+... );
+c) Insert Records
+
+
+cqlsh:ecommerce> INSERT INTO Customer_Orders (Order_Id, Customer_Name, Product_Name, Quantity, Order_Date)
+
+... VALUES (1, 'Amit', 'Laptop', 1, '2026-02-20');
+
+cqlsh:ecommerce>
+
+cqlsh:ecommerce> INSERT INTO Customer_Orders (Order_Id, Customer_Name, Product_Name, Quantity, Order_Date)
+
+... VALUES (2, 'Sneha', 'Mobile', 2, '2026-02-21');
+
+cqlsh:ecommerce>
+
+cqlsh:ecommerce> INSERT INTO Customer_Orders (Order_Id, Customer_Name, Product_Name, Quantity, Order_Date)
+
+... VALUES (3, 'Ravi', 'Headphones', 1, '2026-02-22');
+
+d) Add New Column Using ALTER
+
+
+cqlsh:ecommerce> ALTER TABLE Customer_Orders
+
+... ADD Delivery_Status text;
+e) Update Delivery Status
+
+cqlsh:ecommerce> UPDATE Customer_Orders
+
+... SET Delivery_Status = 'Delivered'
+
+... WHERE Order_Id = 1;
+f) Display all records
+
+cqlsh:ecommerce> SELECT * FROM Ecommerce.Customer_Orders;
+
+
+order_id | customer_name | delivery_status | order_date | product_name | quantity
+
+----------+---------------+-----------------+------------+--------------+----------
+
+1 | Amit | Delivered | 2026-02-20 | Laptop | 1
+
+2 | Sneha | null | 2026-02-21 | Mobile | 2
+
+3 | Ravi | null | 2026-02-22 | Headphones | 1
+
+
+Practice Question 4: Employee Skills (SET Collection Type)
+Focus: SET Collection Data Type
+a) Create Keyspace
+
+    cqlsh> CREATE KEYSPACE Company
+
+... WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
+
+cqlsh> USE Company;
+b) Create Table
+
+cqlsh:company> CREATE TABLE Employee_Skills (
+
+... Emp_Id int PRIMARY KEY,
+
+... Emp_Name text,
+
+... Skills set<text>
+
+... );
+c) Insert Employee Records with Multiple Skills
+
+cqlsh:company> INSERT INTO Employee_Skills (Emp_Id, Emp_Name, Skills)
+
+... VALUES (1, 'Arjun', {'Java', 'Python', 'SQL'});
+
+cqlsh:company>
+
+cqlsh:company> INSERT INTO Employee_Skills (Emp_Id, Emp_Name, Skills)
+
+... VALUES (2, 'Meera', {'C++', 'AWS', 'Docker'});
+d) Add New Skill to Existing Employee
+
+cqlsh:company> UPDATE Employee_Skills
+
+... SET Skills = Skills + {'Kubernetes'}
+
+... WHERE Emp_Id = 1;
+e) Display Employee Names and Skills
+
+cqlsh:company> SELECT Emp_Name, Skills FROM Employee_Skills;
+
+
+
+emp_name | skills
+
+----------+-----------------------------------------
+
+Arjun | {'Java', 'Kubernetes', 'Python', 'SQL'}
+
+Meera | {'AWS', 'C++', 'Docker'}
+Practice Question 5: Product Expiry using TTL
+Focus: TTL (Time To Live)
+a) Create Keyspace
+
+    cqlsh> CREATE KEYSPACE Store
+
+... WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
+
+cqlsh> USE Store;
+
+cqlsh:store>
+b) Create Table
+
+cqlsh:store> CREATE TABLE Product_Info (
+
+... Product_Id int PRIMARY KEY,
+
+... Product_Name text,
+
+... Price double,
+
+... Category text
+
+... );
+c) Insert Product with TTL (20 seconds)
+
+cqlsh:store> INSERT INTO Product_Info (Product_Id, Product_Name, Price, Category)
+
+... VALUES (1, 'Milk', 30, 'Dairy')
+
+... USING TTL 20;
+d) Display Immediately
+
+cqlsh:store> SELECT * FROM Product_Info;
+
+product_id | category | price | product_name
+
+------------+----------+-------+--------------
+
+1 | Dairy | 30 | Milk
+
+
+
+(1 rows)
+e) Display After 20 Seconds
+
+cqlsh:store> SELECT * FROM Product_Info;
+
+
+
+product_id | category | price | product_name
+
+------------+----------+-------+--------------
+
+ Practice Question 6: Online Course Registration
+
+CRUD + ALTER + TTL
+
+
+a) Create a keyspace named Online_Courses
+
+
+cqlsh> CREATE KEYSPACE Online_Courses
+
+... WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
+
+cqlsh> USE Online_Courses;
+
+
+
+b) Create table Course_Registration with:  Reg_Id (Primary Key)  Student_Name  Course_Name  Registration_Date
+
+
+cqlsh:online_courses> CREATE TABLE Course_Registration (
+
+... Reg_Id int PRIMARY KEY,
+
+... Student_Name text,
+
+... Course_Name text,
+
+... Registration_Date date
+
+... );
+
+
+
+c) Insert 3 registration records
+
+
+cqlsh:online_courses> INSERT INTO Course_Registration (Reg_Id, Student_Name, Course_Name, Registration_Date)
+
+... VALUES (1, 'Rahul', 'Python', '2026-02-27');
+
+cqlsh:online_courses>
+
+cqlsh:online_courses> INSERT INTO Course_Registration (Reg_Id, Student_Name, Course_Name, Registration_Date)
+
+... VALUES (2, 'Anita', 'Java', '2026-02-27');
+
+cqlsh:online_courses>
+
+cqlsh:online_courses> INSERT INTO Course_Registration (Reg_Id, Student_Name, Course_Name, Registration_Date)
+
+... VALUES (3, 'Karan', 'C++', '2026-02-27');
+
+cqlsh:online_courses> SELECT * FROM Course_Registration;
+
+
+
+d) Add a new column Payment_Status using ALTER
+
+
+cqlsh:online_courses> ALTER TABLE Course_Registration
+
+... ADD Payment_Status text;
+
+
+
+e) Update payment status for one student
+
+
+cqlsh:online_courses> UPDATE Course_Registration
+
+... SET Payment_Status = 'Paid'
+
+... WHERE Reg_Id = 1;
+
+cqlsh:online_courses> SELECT * FROM Course_Registration;
+
+
+
+
+f) Insert one temporary registration using TTL of 30 seconds
+
+
+cqlsh:online_courses> INSERT INTO Course_Registration (Reg_Id, Student_Name, Course_Name, Registration_Date)
+
+... VALUES (4, 'TempStudent', 'NodeJS', '2026-02-27')
+
+... USING TTL 30;
+
+cqlsh:online_courses> SELECT * FROM Course_Registration;
+
+
+g) Display records before and after TTL expiry
+
+-Before :
+
+reg_id | course_name | payment_status | registration_date | student_name
+
+--------+-------------+----------------+-------------------+--------------
+
+1 | Python | Paid | 2026-02-27 | Rahul
+
+2 | Java | null | 2026-02-27 | Anita
+
+3 | C++ | null | 2026-02-27 | Karan
+
+
+-After :
+
+
+reg_id | course_name | payment_status | registration_date | student_name
+
+--------+-------------+----------------+-------------------+--------------
+
+1 | Python | Paid | 2026-02-27 | Rahul
+
+2 | Java | null | 2026-02-27 | Anita
+
+4 | NodeJS | null | 2026-02-27 | TempStudent
+
+3 | C++ | null | 2026-02-27 | Karan
+
+
+
+
+Practice Question 7: Restaurant Orders
+
+BATCH + UPDATE + DELETE
+
+
+a) Create keyspace Restaurant
+
+cqlsh> CREATE KEYSPACE Restaurant
+
+... WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
+
+
+
+
+b) Create table Orders with:  Order_Id (Primary Key)  Customer_Name  Item_Name  Quantity  Bill_Amount
+
+
+cqlsh> USE Restaurant;
+
+cqlsh:restaurant>
+
+cqlsh:restaurant>
+
+cqlsh:restaurant>
+
+cqlsh:restaurant>
+
+cqlsh:restaurant> CREATE TABLE Orders (
+
+... Order_Id int PRIMARY KEY,
+
+... Customer_Name text,
+
+... Item_Name text,
+
+... Quantity int,
+
+... Bill_Amount int
+
+... );
+
+
+
+c) Insert multiple orders using BATCH
+
+
+cqlsh:restaurant> BEGIN BATCH
+
+... INSERT INTO Orders (Order_Id, Customer_Name, Item_Name, Quantity, Bill_Amount)
+
+... VALUES (1, 'Amit', 'Pizza', 2, 500);
+
+...
+
+... INSERT INTO Orders (Order_Id, Customer_Name, Item_Name, Quantity, Bill_Amount)
+
+... VALUES (2, 'Sara', 'Burger', 1, 150);
+
+...
+
+... INSERT INTO Orders (Order_Id, Customer_Name, Item_Name, Quantity, Bill_Amount)
+
+... VALUES (3, 'John', 'Pasta', 3, 600);
+
+... APPLY BATCH;
+
+cqlsh:restaurant> SELECT * FROM Orders;
+
+
+order_id | bill_amount | customer_name | item_name | quantity
+
+----------+-------------+---------------+-----------+----------
+
+1 | 500 | Amit | Pizza | 2
+
+2 | 150 | Sara | Burger | 1
+
+3 | 600 | John | Pasta | 3
+
+
+
+
+d) Update bill amount for one order
+
+
+cqlsh:restaurant> UPDATE Orders
+
+... SET Bill_Amount = 700
+
+... WHERE Order_Id = 3;
+
+
+
+e) Delete an order
+
+
+cqlsh:restaurant> DELETE FROM Orders
+
+... WHERE Order_Id = 2;
+
+
+
+f) Display remaining records
+
+
+
+cqlsh:restaurant> SELECT * FROM Orders;
+
+
+order_id | bill_amount | customer_name | item_name | quantity
+
+----------+-------------+---------------+-----------+----------
+
+1 | 500 | Amit | Pizza | 2
+
+3 | 700 | John | Pasta | 3
+
+
+
+Practice Question 10: Movie Ratings System
+
+
+MAP Collection + UPDATE
+
+
+a) Create keyspace Movies
+
+
+cqlsh> CREATE KEYSPACE Movies
+
+... WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
+
+AlreadyExists: Keyspace 'movies' already exists
+
+cqlsh> USE Movies;
+
+
+
+b) Create table Movie_Ratings with:  Movie_Id (Primary Key)  Movie_Name  Ratings (MAP&lt;text, int&gt;)
+
+
+
+cqlsh:movies> CREATE TABLE Movie_Ratings (
+
+... Movie_Id int PRIMARY KEY,
+
+... Movie_Name text,
+
+... Ratings MAP<text, int>
+
+... );
+
+
+
+c) Insert movies with ratings from multiple users
+
+
+
+cqlsh:movies> INSERT INTO Movie_Ratings (Movie_Id, Movie_Name, Ratings)
+
+... VALUES (1, 'Inception', {'User1': 5, 'User2': 4});
+
+
+
+d) Add a new user rating
+
+
+
+cqlsh:movies> UPDATE Movie_Ratings
+
+... SET Ratings['User3'] = 5
+
+... WHERE Movie_Id = 1;
+
+
+
+e) Update rating of an existing user
+
+
+
+cqlsh:movies> UPDATE Movie_Ratings
+
+... SET Ratings['User2'] = 5
+
+... WHERE Movie_Id = 1;
+
+
+
+
+f) Retrieve all ratings of a movie
+
+
+cqlsh:movies> SELECT Ratings FROM Movie_Ratings
+
+... WHERE Movie_Id = 1;
+
+
+ratings
+
+--------------------------------------
+
+{'User1': 5, 'User2': 5, 'User3': 5}
